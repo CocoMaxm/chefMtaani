@@ -9,10 +9,10 @@ const path = require('path');
 dotenv.config();
 const app = express();
 
-// Security middleware
+// ---------------- Security ----------------
 app.use(helmet());
 
-// CORS
+// ---------------- CORS ----------------
 app.use(
   cors({
     origin:
@@ -23,39 +23,39 @@ app.use(
   })
 );
 
-// Body parser
+// ---------------- Body parser ----------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
+// ---------------- Rate limiting ----------------
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
 app.use('/api', limiter);
 
-// ✅ API routes
+// ---------------- API Routes ----------------
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/chefs', require('./routes/chef.routes'));
 app.use('/api/bookings', require('./routes/booking.routes'));
 app.use('/api/cuisines', require('./routes/cuisine.routes'));
 app.use('/api/contact', require('./routes/contact.routes'));
 
-// ✅ Serve frontend (plain HTML/CSS/JS)
+// ---------------- Serve Frontend ----------------
 const frontendPath = path.join(__dirname, '..', 'Frontend');
 app.use(express.static(frontendPath));
 
-// ✅ Catch-all: send index.html for non-API routes
+// ✅ SPA catch-all using regex (fixes path-to-regexp crash)
 app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-// DB connection
+// ---------------- DB Connection ----------------
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB connected'))
+  .then(() => console.log('✅ MongoDB Connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-// Start server
+// ---------------- Start Server ----------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
