@@ -50,7 +50,7 @@ app.use('/api', limiter);
 app.use('/uploads', express.static('uploads'));
 
 // ✅ Serve Frontend (works in dev & production)
-const frontendPath = path.join(__dirname, 'Frontend');
+const frontendPath = path.join(__dirname, '..','Frontend');
 app.use(express.static(frontendPath));
 
 app.get('/', (req, res) => {
