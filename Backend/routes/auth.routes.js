@@ -26,7 +26,7 @@ router.post('/register-chef', [
     body('bio').notEmpty().withMessage('Bio is required'),
     body('experience').isInt({ min: 1 }).withMessage('Experience must be at least 1 year'),
     body('cuisineSpecialization').notEmpty().withMessage('Cuisine specialization is required'),
-    body('hourlyRate').isFloat({ min: 50 }).withMessage('Hourly rate must be at least $50'),
+    body('hourlyRate').isFloat({ min: 20 }).withMessage('Hourly rate must be at least $20'),
     body('serviceLocation.city').notEmpty().withMessage('City is required'),
     body('serviceLocation.state').notEmpty().withMessage('State is required'),
     validate

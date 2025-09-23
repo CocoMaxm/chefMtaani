@@ -2,7 +2,7 @@
 const API_BASE_URL =
   window.location.hostname === "localhost"
     ? "http://localhost:5000/api"
-    : "https://chefconnect.onrender.com/api";
+    : "https://chefmtaani.onrender.com/api";
 
 // Helper function to get auth token
 const getAuthToken = () => localStorage.getItem('authToken');

@@ -13,12 +13,20 @@ const app = express();
 app.use(helmet());
 
 // ---------------- CORS ----------------
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? [
+        'https://chefmtaani.onrender.com',   // deployed frontend
+        'https://chefmtaani.onrender.com'   // deployed backend if frontend calls backend
+      ]
+    : [
+        'http://127.0.0.1:5500',             // local frontend (VS Code Live Server)
+        'http://localhost:5500'              // alternative local frontend
+      ];
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? 'https://chefmtaani.onrender.com'
-        : 'http://localhost:5000',
+    origin: allowedOrigins,
     credentials: true,
   })
 );
@@ -59,3 +67,4 @@ mongoose
 // ---------------- Start Server ----------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+ 
