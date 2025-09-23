@@ -1,4 +1,4 @@
-# ChefConnect Backend API
+# ChefMtaani Backend API
 
 ## Installation
 1. Clone the repository
