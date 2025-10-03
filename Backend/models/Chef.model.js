@@ -4,13 +4,17 @@ const chefSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     bio: { type: String, required: [true, 'Bio is required'], maxlength: [500, 'Bio cannot exceed 500 characters'] },
     experience: { type: Number, required: [true, 'Years of experience is required'], min: [1, 'Minimum 1 year of experience required'] },
-    cuisineSpecialization: { type: String, required: [true, 'Cuisine specialization is required'], enum: ['Italian', 'French', 'Asian', 'Mexican', 'Indian', 'Mediterranean', 'American', 'Other'] },
+    cuisineSpecialization: { 
+        type: String, 
+        required: [true, 'Cuisine specialization is required'], 
+        enum: ['Italian', 'French', 'Asian', 'Mexican', 'Indian', 'Mediterranean', 'American', 'Kenyan','Other'] 
+    },
     additionalCuisines: [{ type: String }],
-    hourlyRate: { type: Number, required: [true, 'Hourly rate is required'], min: [50, 'Minimum hourly rate is $50'] },
+    hourlyRate: { type: Number, required: [true, 'Hourly rate is required'], min: [20, 'Minimum hourly rate is $20'] },
     serviceLocation: {
         city: { type: String, required: true },
-        state: { type: String, required: true },
-        maxTravelDistance: { type: Number, default: 25 }// miles 
+        state: { type: String, default: "" }, // ✅ now optional, defaults empty string
+        maxTravelDistance: { type: Number, default: 25 } // miles 
     },
     availability: {
         type: Map,

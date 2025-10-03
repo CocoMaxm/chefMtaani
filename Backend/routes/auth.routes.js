@@ -28,7 +28,6 @@ router.post('/register-chef', [
     body('cuisineSpecialization').notEmpty().withMessage('Cuisine specialization is required'),
     body('hourlyRate').isFloat({ min: 20 }).withMessage('Hourly rate must be at least $20'),
     body('serviceLocation.city').notEmpty().withMessage('City is required'),
-    body('serviceLocation.state').notEmpty().withMessage('State is required'),
     validate
 ], registerChef);
 

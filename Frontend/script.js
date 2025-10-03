@@ -229,37 +229,6 @@
             this.reset();
         });
 
-        // Chef login form
-        document.getElementById('chefLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // In production, this would validate against MongoDB
-            document.getElementById('authTabs').style.display = 'none';
-            document.getElementById('authTabContent').style.display = 'none';
-            document.getElementById('chefDashboard').style.display = 'block';
-            document.getElementById('chefName').textContent = 'Demo Chef';
-            document.getElementById('dashboardCuisine').textContent = 'Italian';
-            document.getElementById('dashboardPrice').textContent = '150';
-            document.getElementById('dashboardLocation').textContent = 'New York, NY';
-            
-            // Show sample bookings
-            document.getElementById('bookingsList').innerHTML = `
-                <div class="mb-2">
-                    <strong>June 25, 2024</strong> - 6:00 PM - 3 hours<br>
-                    <small class="text-muted">123 Main St, New York</small>
-                </div>
-                <div class="mb-2">
-                    <strong>June 28, 2024</strong> - 7:00 PM - 4 hours<br>
-                    <small class="text-muted">456 Oak Ave, Brooklyn</small>
-                </div>
-            `;
-        });
-
-        // Chef signup form
-        document.getElementById('chefSignupForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thank you for your application! Our team will review your profile and contact you within 48 hours.');
-            this.reset();
-        });
 
         // Logout function
         function logout() {
@@ -324,12 +293,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Authentication Functions
 function initializeAuthForms() {
-  // Customer Registration
+  // === CUSTOMER REGISTRATION ===
   const customerRegForm = document.getElementById('customerRegistrationForm');
   if (customerRegForm) {
     customerRegForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const formData = {
         firstName: document.getElementById('regFirstName').value,
         lastName: document.getElementById('regLastName').value,
@@ -340,14 +309,13 @@ function initializeAuthForms() {
       try {
         showLoader();
         const response = await api.auth.register(formData);
-        
-        // Save token and user data
+
         localStorage.setItem('authToken', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         appState.token = response.token;
         appState.user = response.user;
-        
-        alert('Registration successful!');
+
+        alert('Customer registration successful!');
         updateUIForAuthenticatedUser();
         showPage('homePage');
       } catch (error) {
@@ -358,12 +326,12 @@ function initializeAuthForms() {
     });
   }
 
-  // Login Form
+  // === CUSTOMER LOGIN ===
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const credentials = {
         email: document.getElementById('loginEmail').value,
         password: document.getElementById('loginPassword').value,
@@ -372,13 +340,12 @@ function initializeAuthForms() {
       try {
         showLoader();
         const response = await api.auth.login(credentials);
-        
-        // Save token and user data
+
         localStorage.setItem('authToken', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         appState.token = response.token;
         appState.user = response.user;
-        
+
         alert('Login successful!');
         updateUIForAuthenticatedUser();
         showPage('homePage');
@@ -390,82 +357,91 @@ function initializeAuthForms() {
     });
   }
 
-  // Chef Registration
+  // === CHEF SIGNUP ===
   const chefSignupForm = document.getElementById('chefSignupForm');
   if (chefSignupForm) {
     chefSignupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
+     const city = document.getElementById('signupLocation').value.trim();
+      if (!city) {
+        alert("Please enter your city");
+        return;
+      }
+
       const chefData = {
-        firstName: document.getElementById('signupFirstName').value,
-        lastName: document.getElementById('signupLastName').value,
-        email: document.getElementById('signupEmail').value,
+        firstName: document.getElementById('signupFirstName').value.trim(),
+        lastName: document.getElementById('signupLastName').value.trim(),
+        email: document.getElementById('signupEmail').value.trim(),
         password: document.getElementById('signupPassword').value,
-        bio: document.getElementById('signupBio').value,
-        experience: parseInt(document.getElementById('signupExperience').value),
-        cuisineSpecialization: document.getElementById('signupCuisine').value,
+        bio: document.getElementById('signupBio').value.trim(),
+        experience: parseInt(document.getElementById('signupExperience').value, 10),
+        cuisineSpecialization: document.getElementById('signupCuisine').value.trim(),
         hourlyRate: parseFloat(document.getElementById('signupPrice').value),
-        serviceLocation: {
-          city: document.getElementById('signupLocation').value.split(',')[0].trim(),
-          state: document.getElementById('signupLocation').value.split(',')[1].trim(),
-        },
+        serviceLocation: { city },
       };
 
       try {
         showLoader();
         const response = await api.auth.registerChef(chefData);
-        
+
         localStorage.setItem('authToken', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         appState.token = response.token;
         appState.user = response.user;
-        
-        alert('Chef registration successful! Your profile is under review.');
-        updateUIForAuthenticatedUser();
-        showChefDashboard(response.chef);
-      } catch (error) {
-        alert('Registration failed: ' + error.message);
+
+        alert('Chef registration successful! 🎉');
+        chefSignupForm.reset();
+        showChefDashboard(response.user);
+      } catch (err) {
+        console.error(err);
+        alert('Registration failed: ' + err.message);
       } finally {
         hideLoader();
       }
     });
   }
 
-  // Chef Login - Update existing form
+  // === CHEF LOGIN ===
   const chefLoginForm = document.getElementById('chefLoginForm');
   if (chefLoginForm) {
     chefLoginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const credentials = {
-        email: document.getElementById('loginEmail').value,
+        email: document.getElementById('loginEmail').value.trim(),
         password: document.getElementById('loginPassword').value,
       };
 
       try {
         showLoader();
         const response = await api.auth.login(credentials);
-        
+
         if (response.user.role !== 'chef') {
           throw new Error('This login is for chefs only');
         }
-        
+
         localStorage.setItem('authToken', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         appState.token = response.token;
         appState.user = response.user;
-        
-        // Load chef bookings
+
+        alert('Chef login successful ✅');
+        chefLoginForm.reset();
+
+        // Load chef dashboard (with bookings if available)
         const bookings = await api.bookings.getMy();
         showChefDashboard(response.user, bookings.data);
-      } catch (error) {
-        alert('Login failed: ' + error.message);
+      } catch (err) {
+        console.error(err);
+        alert('Login failed: ' + err.message);
       } finally {
         hideLoader();
       }
     });
   }
 }
+
 
 // Update UI for authenticated users
 function updateUIForAuthenticatedUser() {

@@ -102,7 +102,21 @@ exports.login = async (req, res, next) => {
 // @access  Public
 exports.registerChef = async (req, res, next) => {
     try {
-        const { firstName, lastName, email, password, bio, experience, cuisineSpecialization, hourlyRate, serviceLocation } = req.body;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            bio,
+            experience,
+            cuisineSpecialization,
+            hourlyRate,
+            serviceLocation
+        } = req.body;
+
+        // Extract city, default state to empty string if not provided
+        const city = serviceLocation?.city || "";
+        const state = serviceLocation?.state || "";
 
         // Create user with chef role
         const user = await User.create({
@@ -120,7 +134,7 @@ exports.registerChef = async (req, res, next) => {
             experience,
             cuisineSpecialization,
             hourlyRate,
-            serviceLocation
+            serviceLocation: { city, state } // always save both
         });
 
         // Send welcome email
