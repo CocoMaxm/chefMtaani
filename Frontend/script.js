@@ -1,4 +1,4 @@
-
+console.log("Script.js loaded");
 
         // Sample data for chefs
         const chefsData = {
@@ -262,7 +262,7 @@
 
 
 // 2. Updated HTML file with API integration
-// Add this script section to your existing HTML file before the closing </body> tag:
+
 
 // Global state management
 const appState = {
@@ -382,9 +382,10 @@ function initializeAuthForms() {
       };
 
       try {
-        showLoader();
+        showLoader(); // 1. Start Spinner
         const response = await api.auth.registerChef(chefData);
 
+        // 2. Save Session Data
         localStorage.setItem('authToken', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         appState.token = response.token;
@@ -393,11 +394,14 @@ function initializeAuthForms() {
         alert('Chef registration successful! 🎉');
         chefSignupForm.reset();
         showChefDashboard(response.user);
+        
       } catch (err) {
-        console.error(err);
+        // 3. Handle Errors
+        console.error("Chef Registration Error:", err);
         alert('Registration failed: ' + err.message);
       } finally {
-        hideLoader();
+        // 4. ALWAYS Stop Spinner (This is what was missing/failing)
+        hideLoader(); 
       }
     });
   }

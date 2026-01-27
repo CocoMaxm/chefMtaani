@@ -9,9 +9,18 @@ const getAuthToken = () => localStorage.getItem('authToken');
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
+  const contentType = response.headers.get("content-type");
+  
+  // If the server didn't send JSON (like an HTML error page), don't try to parse it
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await response.text();
+    console.error("Server returned non-JSON response:", text);
+    throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+  }
+
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.error || 'Something went wrong');
+    throw new Error(data.error || data.message || 'Something went wrong');
   }
   return data;
 };
