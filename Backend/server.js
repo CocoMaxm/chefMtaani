@@ -9,8 +9,48 @@ const path = require('path');
 dotenv.config();
 const app = express();
 
-// ---------------- Security ----------------
-app.use(helmet());
+// ---------------- Security (Updated for Inline Events) ----------------
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'", 
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.jsdelivr.net"
+        ],
+        // 1. ADD THIS: This allows your onclick="showPage(...)" to work
+        scriptSrcAttr: ["'unsafe-inline'"], 
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://cdnjs.cloudflare.com",
+          "https://fonts.googleapis.com"
+        ],
+        fontSrc: [
+          "'self'",
+          "https://cdnjs.cloudflare.com",
+          "https://fonts.gstatic.com"
+        ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https:",
+          "http:"
+        ],
+        connectSrc: [
+          "'self'",
+          "http://localhost:5000",
+          "https://chefmtaani.onrender.com",
+          // 2. ADD THIS: Allows the browser to load Bootstrap source maps
+          "https://cdnjs.cloudflare.com" 
+        ],
+      },
+    },
+  })
+);
 
 // ---------------- CORS ----------------
 const allowedOrigins =
@@ -21,7 +61,8 @@ const allowedOrigins =
       ]
     : [
         'http://127.0.0.1:5500',             // local frontend (VS Code Live Server)
-        'http://localhost:5500'              // alternative local frontend
+        'http://localhost:5500',              // alternative local frontend
+        'http://localhost:5000'
       ];
 
 app.use(
