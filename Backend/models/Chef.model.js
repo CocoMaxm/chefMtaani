@@ -35,7 +35,7 @@ const chefSchema = new mongoose.Schema({
 });
 
 // Create index for location-based queries
-chefSchema.index({ 'serviceLocation.city': 1, 'serviceLocation.state': 1 });
+chefSchema.index({ 'serviceLocation.city': 1, 'serviceLocation.state': 1 }); 
 chefSchema.index({ cuisineSpecialization: 1 });
 chefSchema.index({ 'rating.average': -1 });
 
